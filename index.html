@@ -36,6 +36,21 @@
         .section-title {
             @apply text-3xl md:text-4xl font-bold text-slate-800;
         }
+        /* カルーセルスライドのスタイル */
+        .carousel-slide {
+            display: none; /* 初期状態では非表示 */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        .carousel-slide.active {
+            display: block; /* アクティブなスライドのみ表示 */
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-700">
@@ -70,20 +85,55 @@
         </div>
     </header>
 
-    <!-- メインコンテンツ -->
+
+<!-- メインコンテンツ -->
     <main>
-        <!-- ヒーローセクション -->
-        <section class="relative h-[60vh] md:h-[80vh] min-h-[500px] flex items-center justify-center text-white text-center px-6">
-            <!-- 画像をここに挿入してください -->
-            <img src="images/top.jpg" alt="メインビジュアル" class="absolute inset-0 w-full h-full object-cover">
-            <!-- 画像の上のオーバーレイ -->
-            <div class="absolute inset-0 bg-gradient-to-r from-indigo-600/70 to-blue-500/70"></div>
-            <div class="relative z-10">
+        <!-- ヒーローセクション (カルーセルに変更) -->
+        <section class="relative h-[60vh] md:h-[80vh] min-h-[500px] flex items-center justify-center text-white text-center px-6 overflow-hidden">
+            <!-- カルーセルコンテナ -->
+            <div id="hero-carousel" class="absolute inset-0 w-full h-full">
+                <!-- スライド1 -->
+                <div class="carousel-slide active">
+                    <img src="images/top.jpg" alt="メインビジュアル1" class="absolute inset-0 w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-r from-white/30 to-white/50"></div>
+                </div>
+
+                <!-- スライド2 (例: 別の画像) -->
+                <div class="carousel-slide">
+                    <!-- 画像が提供されていないため、プレースホルダーを使用します。必要に応じて更新してください。 -->
+                    <img src="images/top2.jpg" alt="メインビジュアル2" class="absolute inset-0 w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-r from-white/30 to-white/50"></div>
+                </div>
+
+                <!-- スライド3 (例: 別の画像) -->
+                <div class="carousel-slide">
+                    <!-- 画像が提供されていないため、プレースホルダーを使用します。必要に応じて更新してください。 -->
+                    <img src="images/top3.jpg" alt="メインビジュアル3" class="absolute inset-0 w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-r from-white/30 to-white/50"></div>
+                </div>
+            </div>
+
+            <!-- 固定テキストコンテンツ -->
+            <div class="relative z-10 flex flex-col items-center justify-center h-full w-full">
                 <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight fade-in-up">日本の魅力を伝えたい</h1>
                 <p class="text-lg md:text-xl text-indigo-100 max-w-3xl mx-auto fade-in-up" style="transition-delay: 0.4s;">最新技術を駆使して、世界中の人たちに日本の魅力を伝えていきます。</p>
                 <a href="#services" class="mt-8 inline-block bg-white text-indigo-600 font-bold px-8 py-3 rounded-full hover:bg-indigo-50 transition duration-300 shadow-xl fade-in-up" style="transition-delay: 0.6s;">事業内容を見る</a>
             </div>
+
+            <!-- カルーセルナビゲーション (矢印) -->
+            <button id="prev-slide" class="absolute left-6 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full z-20 transition-all duration-300">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button id="next-slide" class="absolute right-6 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full z-20 transition-all duration-300">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+
+            <!-- カルーセルインジケーター (ドット) -->
+            <div id="carousel-dots" class="absolute bottom-8 z-20 flex space-x-2">
+                <!-- ドットはJavaScriptで生成されます -->
+            </div>
         </section>
+    
 
         <!-- 会社概要セクション -->
         <section id="about" class="py-24 bg-white">
