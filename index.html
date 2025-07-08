@@ -7,13 +7,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Playfair Display フォントを追加 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         /* 日本語フォントと英語フォントの指定 */
         body {
             font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #0F172A; /* gray-950に近い色 */
+        }
+        /* Playfair Display フォントのユーティリティクラス */
+        .font-playfair {
+            font-family: 'Playfair Display', serif;
         }
         /* スムーズスクロール */
         html {
@@ -22,16 +28,17 @@
         /* スクロール時のアニメーション用スタイル */
         .fade-in-up {
             opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s cubic-bezier(0.390, 0.575, 0.565, 1.000), transform 0.8s cubic-bezier(0.390, 0.575, 0.565, 1.000);
-            transition-delay: 0.2s;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.215, 0.610, 0.355, 1.000), transform 0.8s cubic-bezier(0.215, 0.610, 0.355, 1.000);
+            transition-delay: 0.1s;
         }
         .fade-in-up.is-visible {
             opacity: 1;
             transform: translateY(0);
         }
+        /* セクションタイトルをさらに大きく */
         .section-title {
-            @apply text-3xl md:text-4xl font-bold text-slate-800;
+            @apply text-5xl md:text-6xl font-bold text-white;
         }
         /* カルーセルスライドのスタイル */
         .carousel-slide {
@@ -42,7 +49,7 @@
             width: 100%;
             height: 100%;
             opacity: 0;
-            transition: opacity 1s ease-in-out;
+            transition: opacity 1.5s ease-in-out;
         }
         .carousel-slide.active {
             display: block; /* アクティブなスライドのみ表示 */
@@ -50,185 +57,229 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-700">
+<body class="bg-gray-950 text-gray-400">
 
-    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+    <!-- ヘッダー -->
+    <!-- 背景色を白に変更し、テキスト色を調整 -->
+    <header class="bg-white/90 backdrop-blur-lg fixed top-0 left-0 right-0 z-50 shadow-md">
         <div class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
-                <div class="text-2xl font-bold text-slate-900">
-                    <a href="#">株式会社groove create</a>
+                <div class="text-xl font-bold text-gray-900">
+                    <!-- ロゴ画像を<img>タグに置き換え、ユーザーが挿入できるようにコメントを追加 -->
+                    <a href="https://rs09s.github.io/groovecreate/" class="flex items-center">
+                        <!--
+                            ここにあなたのロゴ画像のURLを挿入してください。
+                            背景を透過させたい場合は、PNG形式などの透過背景を持つ画像を使用してください。
+                            例: <img src="あなたのロゴ画像のURL.png" alt="株式会社groove create ロゴ" class="h-8 md:h-10 w-auto">
+                        -->
+                        <img src="images/logo-01.png" alt="株式会社groove create ロゴ" class="h-8 md:h-10 w-auto">
+                    </a>
                 </div>
                 <nav class="hidden md:flex items-center space-x-8">
-                    <a href="#about" class="text-slate-600 hover:text-indigo-600 transition duration-300">会社概要</a>
-                    <a href="#services" class="text-slate-600 hover:text-indigo-600 transition duration-300">事業内容</a>
-                    <a href="#news" class="text-slate-600 hover:text-indigo-600 transition duration-300">お知らせ</a>
-                    <a href="#contact" class="bg-indigo-600 text-white px-5 py-2 rounded-full font-semibold hover:bg-indigo-700 transition duration-300 shadow-lg hover:shadow-indigo-500/50">お問い合わせ</a>
+                    <a href="#about" class="text-gray-700 hover:text-gray-900 transition duration-300">会社概要</a>
+                    <a href="#services" class="text-gray-700 hover:text-gray-900 transition duration-300">事業内容</a>
+                    <a href="#news" class="text-gray-700 hover:text-gray-900 transition duration-300">お知らせ</a>
+                    <a href="#contact" class="bg-gray-700 text-white px-5 py-2 rounded-full font-semibold hover:bg-gray-800 transition duration-300 shadow-lg hover:shadow-gray-700/50">お問い合わせ</a>
                 </nav>
                 <div class="md:hidden">
-                    <button id="mobile-menu-button" class="text-slate-600 focus:outline-none">
+                    <button id="mobile-menu-button" class="text-gray-700 focus:outline-none">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                     </button>
                 </div>
             </div>
-              <div id="mobile-menu" class="hidden md:hidden mt-4">
-                <a href="#about" class="block py-2 px-4 text-sm text-slate-600 hover:bg-indigo-50 rounded-md">会社概要</a>
-                <a href="#services" class="block py-2 px-4 text-sm text-slate-600 hover:bg-indigo-50 rounded-md">事業内容</a>
-                <a href="#news" class="block py-2 px-4 text-sm text-slate-600 hover:bg-indigo-50 rounded-md">お知らせ</a>
-                <a href="#contact" class="block mt-2 py-2 px-4 text-sm text-white bg-indigo-600 rounded-full text-center">お問い合わせ</a>
+            <div id="mobile-menu" class="hidden md:hidden mt-4 bg-gray-100 rounded-lg p-2">
+                <a href="#about" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-200 rounded-md">会社概要</a>
+                <a href="#services" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-200 rounded-md">事業内容</a>
+                <a href="#news" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-200 rounded-md">お知らせ</a>
+                <a href="#contact" class="block mt-2 py-2 px-4 text-sm text-white bg-gray-700 rounded-full text-center">お問い合わせ</a>
             </div>
         </div>
     </header>
 
-
 <main>
-        <section class="relative h-[60vh] md:h-[80vh] min-h-[500px] flex items-center justify-center text-white text-center px-6 overflow-hidden">
-            <div id="hero-carousel" class="absolute inset-0 w-full h-full">
-                <div class="carousel-slide active">
-                    <img src="images/top.jpg" alt="メインビジュアル1" class="absolute inset-0 w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-r from-white/60 to-white/80"></div>
-                </div>
-
-                <div class="carousel-slide">
-                    <img src="images/top2.jpg" alt="メインビジュアル2" class="absolute inset-0 w-full h-full object-cover">
-                     <div class="absolute inset-0 bg-gradient-to-r from-white/60 to-white/80"></div>
-                </div>
-
-                <div class="carousel-slide">
-                    <img src="images/top3.jpg" alt="メインビジュアル3" class="absolute inset-0 w-full h-full object-cover">
-                     <div class="absolute inset-0 bg-gradient-to-r from-white/60 to-white/80"></div>
-                </div>
+    <!-- メインビジュアルセクション -->
+    <section class="relative h-screen min-h-[700px] overflow-hidden">
+        <!-- 背景カルーセル -->
+        <div id="hero-carousel" class="absolute inset-0 w-full h-full z-0">
+            <!-- スライド 1 -->
+            <div class="carousel-slide active">
+                <img src="images/top.jpg" alt="メインビジュアル1" class="w-full h-full object-cover grayscale">
             </div>
-
-            <div class="relative z-10 flex flex-col items-center justify-center h-full w-full">
-                <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight fade-in-up text-black">日本の魅力を伝えたい</h1>
-                <p class="text-lg md:text-xl text-gray-800 max-w-3xl mx-auto fade-in-up" style="transition-delay: 0.4s;">最新技術を駆使して、世界中の人たちに日本の魅力を伝えていきます。</p>
-                <a href="#services" class="mt-8 inline-block bg-white text-indigo-600 font-bold px-8 py-3 rounded-full hover:bg-indigo-50 transition duration-300 shadow-xl fade-in-up" style="transition-delay: 0.6s;">事業内容を見る</a>
+            <!-- スライド 2 -->
+            <div class="carousel-slide">
+                <img src="images/top2.jpg" alt="メインビジュアル2" class="w-full h-full object-cover grayscale">
             </div>
-
-            <button id="prev-slide" class="absolute left-6 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full z-20 transition-all duration-300">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <button id="next-slide" class="absolute right-6 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full z-20 transition-all duration-300">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-
-            <div id="carousel-dots" class="absolute bottom-8 z-20 flex space-x-2">
-                </div>
-        </section>
-   
-
-        <section id="about" class="py-24 bg-white">
-            <div class="container mx-auto px-6 text-center">
-                <h2 class="section-title mb-4 fade-in-up">私たちについて</h2>
-                <p class="text-slate-600 max-w-3xl mx-auto mb-16 fade-in-up">異なる背景や文化を持つ人々が心を通わせ、互いに心地よい感覚を分かち合える場所を創り出すこと。それが私たちのビジョンです。</p>
-                <div class="grid md:grid-cols-2 gap-12 items-center">
-                    <div class="fade-in-up">
-                        <img src="images/logo.png" alt="オフィス" class="rounded-lg shadow-2xl shadow-indigo-200/50 w-full">
-                    </div>
-                    <div class="text-left fade-in-up" style="transition-delay: 0.3s;">
-                        <h3 class="text-2xl font-bold text-slate-800 mb-4">日本の真の魅力を世界へ</h3>
-                        <p class="text-slate-600 mb-4">もっと多くの人がコミュニケーションをとり、音楽のグルーヴのように心が高鳴る瞬間を日本で体験してほしい。そうすることで、この国をもっと好きになってもらいたい。私たちの社名には、そんな願いが込められています。</p>
-                        <p class="text-slate-600">ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー</p>
-                    </div>
-                </div>
+            <!-- スライド 3 -->
+            <div class="carousel-slide">
+                <img src="images/top3.jpg" alt="メインビジュアル3" class="w-full h-full object-cover grayscale">
             </div>
-        </section>
-
-        <section id="services" class="py-24 bg-slate-50">
-            <div class="container mx-auto px-6">
-                <h2 class="section-title text-center mb-16 fade-in-up">事業内容</h2>
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 fade-in-up">
-                        <div class="text-indigo-500 mb-5 inline-block bg-indigo-100 p-4 rounded-full"><i class="fa-solid fa-desktop fa-2x"></i></div>
-                        <h3 class="text-xl font-bold text-slate-800 mb-3">訪日外国人向け観光スポット提案サービス（ローンチ前）</h3>
-                        <p class="text-slate-600">ローカルが真におすすめする日本の体験を複数レコメンドし、一括代行予約を実施いたします。</p>
-                    </div>
-                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 fade-in-up" style="transition-delay: 0.3s;">
-                        <div class="text-indigo-500 mb-5 inline-block bg-indigo-100 p-4 rounded-full"><i class="fa-solid fa-building fa-2x"></i></div>
-                        <h3 class="text-xl font-bold text-slate-800 mb-3">不動産コンサルティング</h3>
-                        <p class="text-slate-600">あなたに合わせた収益不動産をご提案いたします。</p>
-                    </div>
-                    </div>
-            </div>
-        </section>
+        </div>
         
-          <section id="news" class="py-24 bg-slate-50">
-            <div class="container mx-auto px-6">
-                <h2 class="section-title text-center mb-16 fade-in-up">お知らせ</h2>
-                <div class="space-y-6 max-w-4xl mx-auto fade-in-up">
-                    <a href="#" class="block bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-                        <div class="flex justify-between items-center">
-                            <p class="text-slate-500 text-sm">2025.07.01</p>
-                            <span class="text-xs bg-indigo-100 text-indigo-800 font-semibold px-2 py-1 rounded-full">新サービス</span>
-                        </div>
-                        <h3 class="text-lg font-semibold text-slate-800 mt-2">-----------------------------------</h3>
-                    </a>
-                    <a href="#" class="block bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-                           <div class="flex justify-between items-center">
-                            <p class="text-slate-500 text-sm">2025.06.20</p>
-                            <span class="text-xs bg-slate-100 text-slate-800 font-semibold px-2 py-1 rounded-full">メディア</span>
-                        </div>
-                        <h3 class="text-lg font-semibold text-slate-800 mt-2">----------------------------------</h3>
-                    </a>
+        <!-- グラデーションオーバーレイの透過度を調整 -->
+        <div class="absolute inset-0 bg-gradient-to-r from-gray-950 via-gray-950/90 to-transparent z-10"></div>
+
+        <!-- テキストコンテンツ -->
+        <!-- bottom の値を調整し、見出しと段落のサイズを小さく -->
+        <div class="absolute bottom-16 left-0 right-0 mx-auto px-6 z-20">
+            <div class="max-w-xl text-left">
+                <!-- フォントサイズをさらに小さく調整 -->
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight fade-in-up text-white font-playfair">日本の魅力を伝えたい</h1>
+                <!-- フォントサイズをさらに小さく調整 -->
+                <p class="text-base md:text-lg text-gray-300 fade-in-up" style="transition-delay: 0.2s;">最新技術を駆使して、世界中の人たちに日本の魅力を伝えていきます。</p>
+            </div>
+        </div>
+
+        <!-- カルーセルナビゲーション -->
+        <button id="prev-slide" class="absolute left-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-3 rounded-full z-20 transition-all duration-300">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button id="next-slide" class="absolute right-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-3 rounded-full z-20 transition-all duration-300">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        <div id="carousel-dots" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-3"></div>
+    </section>
+    
+    <!-- 私たちについて -->
+    <section id="about" class="py-24 md:py-32 bg-gray-900">
+        <div class="container mx-auto px-6 text-center">
+            <!-- text-gradient を削除し、text-white を適用 -->
+            <h2 class="section-title mb-4 fade-in-up"><span class="text-white">私たちについて</span></h2>
+            <p class="text-gray-500 max-w-3xl mx-auto mb-20 fade-in-up">異なる背景や文化を持つ人々が心を通わせ、互いに心地よい感覚を分かち合える場所を創り出すこと。それが私たちのビジョンです。</p>
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div class="fade-in-up">
+                    <img src="https://placehold.co/600x400/333333/ffffff?text=Logo" alt="会社ロゴ" class="rounded-lg shadow-2xl shadow-gray-700/20 w-full">
                 </div>
-                <div class="text-center mt-12 fade-in-up">
-                    <a href="#" class="bg-slate-800 text-white px-6 py-3 rounded-full hover:bg-slate-900 transition duration-300 font-semibold">もっと見る</a>
+                <div class="text-left fade-in-up" style="transition-delay: 0.2s;">
+                    <h3 class="text-3xl font-bold text-white mb-6">日本の真の魅力を世界へ</h3>
+                    <p class="text-gray-500 mb-4 leading-relaxed">もっと多くの人がコミュニケーションをとり、音楽のグルーヴのように心が高鳴る瞬間を日本で体験してほしい。そうすることで、この国をもっと好きになってもらいたい。私たちの社名には、そんな願いが込められています。</p>
+     <!--               
+<p class="text-gray-500 leading-relaxed">私たちはテクノロジーと人の温もりを融合させ、忘れられない体験を創造します。</p> -->
+
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section id="contact" class="py-24 bg-white">
-            <div class="container mx-auto px-6 fade-in-up">
-                <div class="text-center">
-                    <h2 class="section-title mb-4">お問い合わせ</h2>
+    <!-- 事業内容 -->
+    <section id="services" class="py-24 md:py-32 bg-gray-950">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-center mb-20 fade-in-up">事業内容</h2>
+            <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <!-- カード1 -->
+                <!-- ホバー時のシャドウ効果を追加 -->
+                <div class="bg-gray-900 p-8 rounded-xl border border-gray-800 hover:border-gray-600 hover:-translate-y-2 transition-all duration-300 fade-in-up hover:shadow-xl">
+                    <div class="text-gray-300 mb-6 inline-block bg-gray-900/50 p-4 rounded-full"><i class="fa-solid fa-desktop fa-2x"></i></div>
+                    <h3 class="text-xl font-bold text-white mb-3">訪日外国人向け観光スポット提案サービス（ローンチ前）</h3>
+                    <p class="text-gray-500">ローカルが真におすすめする日本の体験を複数レコメンドし、一括代行予約を実施いたします。</p>
                 </div>
-                <div class="max-w-2xl mx-auto bg-slate-50/50 p-8 rounded-xl shadow-lg border border-slate-200">
-                    <form>
-                        <div class="mb-5">
-                            <label for="name" class="block text-slate-700 font-semibold mb-2">お名前</label>
-                            <input type="text" id="name" name="name" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                        </div>
-                        <div class="mb-5">
-                            <label for="email" class="block text-slate-700 font-semibold mb-2">メールアドレス</label>
-                            <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                        </div>
-                        <div class="mb-6">
-                            <label for="message" class="block text-slate-700 font-semibold mb-2">お問い合わせ内容</label>
-                            <textarea id="message" name="message" rows="5" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required></textarea>
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 px-8 rounded-full hover:bg-indigo-700 transition duration-300 shadow-lg hover:shadow-indigo-500/50">送信する</button>
-                        </div>
-                    </form>
+                <!-- カード2 -->
+                <!-- ホバー時のシャドウ効果を追加 -->
+                <div class="bg-gray-900 p-8 rounded-xl border border-gray-800 hover:border-gray-600 hover:-translate-y-2 transition-all duration-300 fade-in-up hover:shadow-xl" style="transition-delay: 0.2s;">
+                    <div class="text-gray-300 mb-6 inline-block bg-gray-900/50 p-4 rounded-full"><i class="fa-solid fa-building fa-2x"></i></div>
+                    <h3 class="text-xl font-bold text-white mb-3">不動産コンサルティング</h3>
+                    <p class="text-gray-500">あなたに合わせた収益不動産をご提案いたします。</p>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
+    
+    <!-- お知らせ -->
+    <section id="news" class="py-24 md:py-32 bg-gray-900">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-center mb-20 fade-in-up">お知らせ</h2>
+            <div class="space-y-6 max-w-4xl mx-auto fade-in-up">
+                <a href="#" class="block bg-gray-950/50 p-6 rounded-lg border border-gray-800 hover:border-gray-600 hover:bg-gray-900/70 transition-all duration-300">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                        <p class="text-gray-500 text-sm">2025.07.01</p>
+                        <span class="text-xs bg-gray-300 text-gray-900 font-semibold px-3 py-1 rounded-full self-start">新サービス</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mt-3">訪日外国人向け観光スポット提案サービスのティザーサイトを公開しました。</h3>
+                </a>
+                <a href="#" class="block bg-gray-950/50 p-6 rounded-lg border border-gray-800 hover:border-gray-600 hover:bg-gray-900/70 transition-all duration-300">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                        <p class="text-gray-500 text-sm">2025.06.20</p>
+                        <span class="text-xs bg-gray-700 text-gray-200 font-semibold px-3 py-1 rounded-full self-start">メディア</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mt-3">代表のインタビューが「Global Innovators」に掲載されました。</h3>
+                </a>
+            </div>
+            <div class="text-center mt-16 fade-in-up">
+                <a href="#" class="bg-gray-800 text-white px-8 py-3 rounded-full hover:bg-gray-700 transition duration-300 font-semibold">もっと見る</a>
+            </div>
+        </div>
+    </section>
 
-    <footer class="bg-slate-800 text-white">
-        <div class="container mx-auto px-6 py-12">
-            <div class="grid md:grid-cols-3 gap-8 mb-8">
+    <!-- お問い合わせ -->
+    <section id="contact" class="py-24 md:py-32 bg-gray-950">
+        <div class="container mx-auto px-6 fade-in-up">
+            <div class="text-center">
+                <h2 class="section-title mb-4">お問い合わせ</h2>
+                <p class="text-gray-500 max-w-2xl mx-auto mb-12">サービスに関するご質問やご相談など、お気軽にお問い合わせください。</p>
+            </div>
+            <div class="max-w-2xl mx-auto bg-gray-900/50 p-8 rounded-xl shadow-lg border border-gray-800">
+                <!-- Formsubmit の設定 -->
+                <form id="contact-form" action="https://formsubmit.co/your-email@example.com" method="POST">
+                    <!--
+                        ↑↑↑ ここにあなたのメールアドレスを設定してください ↑↑↑
+                        例: action="https://formsubmit.co/sakamoto@groove-create.com"
+                        Formsubmitの詳しい使い方は公式サイトをご確認ください: https://formsubmit.co/
+                    -->
+                    <input type="hidden" name="_next" value="https://rs09s.github.io/groovecreate/?success=true">
+                    <!--
+                        ↑↑↑ 上記の "YOUR_SITE_URL" をあなたのサイトのURLに置き換えてください。
+                        これにより、フォーム送信後にこのページに戻り、成功メッセージが表示されます。
+                        例: value="https://www.yourwebsite.com/?success=true"
+                    -->
+                    <input type="text" name="_honey" style="display:none"> <!-- スパム対策のハニーポット -->
+                    <input type="hidden" name="_captcha" value="false"> <!-- CAPTCHAを無効化（任意） -->
+
+                    <div class="mb-6">
+                        <label for="name" class="block text-gray-400 font-semibold mb-2">お名前</label>
+                        <input type="text" id="name" name="name" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 text-white" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="email" class="block text-gray-400 font-semibold mb-2">メールアドレス</label>
+                        <input type="email" id="email" name="email" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 text-white" required>
+                    </div>
+                    <div class="mb-8">
+                        <label for="message" class="block text-gray-400 font-semibold mb-2">お問い合わせ内容</label>
+                        <textarea id="message" name="message" rows="5" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 text-white" required></textarea>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="w-full bg-gray-700 text-white font-bold py-3 px-8 rounded-full hover:bg-gray-800 transition duration-300 shadow-lg hover:shadow-gray-700/50">送信する</button>
+                    </div>
+                </form>
+                <p id="form-message" class="text-center text-green-400 mt-4 hidden"></p>
+            </div>
+        </div>
+    </section>
+</main>
+
+    <!-- フッター -->
+    <footer class="bg-gray-900 text-white border-t border-gray-800">
+        <div class="container mx-auto px-6 py-16">
+            <div class="grid md:grid-cols-3 gap-10 mb-10">
                 <div>
                     <h3 class="text-xl font-bold mb-4">株式会社groove create</h3>
-                    <p class="text-slate-400">〒272-0121<br>千葉県市川市末広１丁目１９番７－２１１号（ＳＡＴＯＭＩ－５番館）</p>
+                    <p class="text-gray-500 text-sm">〒272-0121<br>千葉県市川市末広１丁目１９番７－２１１号（ＳＡＴＯＭＩ－５番館）</p>
                 </div>
                 <div>
                     <h3 class="text-lg font-semibold mb-4">サイトマップ</h3>
                     <ul class="space-y-2">
-                        <li><a href="#about" class="text-slate-400 hover:text-white transition">会社概要</a></li>
-                        <li><a href="#services" class="text-slate-400 hover:text-white transition">事業内容</a></li>
-                        <li><a href="#news" class="text-slate-400 hover:text-white transition">お知らせ</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-white transition">プライバシーポリシー</a></li>
+                        <li><a href="#about" class="text-gray-500 hover:text-gray-300 transition">会社概要</a></li>
+                        <li><a href="#services" class="text-gray-500 hover:text-gray-300 transition">事業内容</a></li>
+                        <li><a href="#news" class="text-gray-500 hover:text-gray-300 transition">お知らせ</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-gray-300 transition">プライバシーポリシー</a></li>
                     </ul>
                 </div>
                 <div>
                     <h3 class="text-lg font-semibold mb-4">フォローする</h3>
                     <div class="flex space-x-4">
-                        <a href="https://www.instagram.com/loco_japan/" class="text-slate-400 hover:text-white"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://www.instagram.com/loco_japan/" class="text-gray-500 text-2xl hover:text-gray-300 transition"><i class="fa-brands fa-instagram"></i></a>
                     </div>
                 </div>
             </div>
-            <div class="border-t border-slate-700 pt-8 text-center text-slate-400 text-sm">
+            <div class="border-t border-gray-800 pt-8 text-center text-gray-600 text-sm">
                 <p>&copy; 2025 株式会社groove create. All Rights Reserved.</p>
             </div>
         </div>
@@ -245,19 +296,15 @@
         // スクロールに応じたアニメーション
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                // ビューポート内に入ったら is-visible クラスを追加
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
                 }
             });
         }, {
-            threshold: 0.1 // 要素が10%見えたらトリガー
+            threshold: 0.1
         });
-
-        // アニメーションを適用したい要素をすべて選択
         const elementsToAnimate = document.querySelectorAll('.fade-in-up');
         elementsToAnimate.forEach(el => observer.observe(el));
-
 
         // カルーセル機能
         const slides = document.querySelectorAll('.carousel-slide');
@@ -265,13 +312,12 @@
         const nextButton = document.getElementById('next-slide');
         const dotsContainer = document.getElementById('carousel-dots');
         let currentSlide = 0;
-        let slideInterval; // 自動切り替えのインターバルID
+        let slideInterval;
 
-        // ドットナビゲーションの生成
         function createDots() {
             slides.forEach((_, index) => {
                 const dot = document.createElement('span');
-                dot.classList.add('w-3', 'h-3', 'bg-white/50', 'rounded-full', 'cursor-pointer', 'transition-all', 'duration-300');
+                dot.classList.add('w-3', 'h-3', 'bg-white/40', 'rounded-full', 'cursor-pointer', 'transition-all', 'duration-300');
                 dot.setAttribute('data-slide-index', index);
                 dotsContainer.appendChild(dot);
                 dot.addEventListener('click', () => {
@@ -281,62 +327,50 @@
             });
         }
 
-        // スライドの表示を更新
         function updateSlideDisplay() {
             slides.forEach((slide, index) => {
-                if (index === currentSlide) {
-                    slide.classList.add('active');
-                } else {
-                    slide.classList.remove('active');
-                }
+                slide.classList.toggle('active', index === currentSlide);
             });
             updateDots();
         }
 
-        // ドットの表示を更新
         function updateDots() {
             const dots = dotsContainer.querySelectorAll('span');
             dots.forEach((dot, index) => {
                 if (index === currentSlide) {
                     dot.classList.add('bg-white', 'scale-125');
-                    dot.classList.remove('bg-white/50');
+                    dot.classList.remove('bg-white/40');
                 } else {
                     dot.classList.remove('bg-white', 'scale-125');
-                    dot.classList.add('bg-white/50');
+                    dot.classList.add('bg-white/40');
                 }
             });
         }
 
-        // 指定したスライドへ移動
         function goToSlide(index) {
             currentSlide = index;
             updateSlideDisplay();
         }
 
-        // 次のスライドへ移動
         function nextSlide() {
             currentSlide = (currentSlide + 1) % slides.length;
             updateSlideDisplay();
         }
 
-        // 前のスライドへ移動
         function prevSlide() {
             currentSlide = (currentSlide - 1 + slides.length) % slides.length;
             updateSlideDisplay();
         }
 
-        // 自動切り替えを開始
         function startAutoSlide() {
-            slideInterval = setInterval(nextSlide, 5000); // 5秒ごとに切り替え
+            slideInterval = setInterval(nextSlide, 5000);
         }
 
-        // 自動切り替えをリセット（手動操作があった場合など）
         function resetInterval() {
             clearInterval(slideInterval);
             startAutoSlide();
         }
 
-        // イベントリスナー
         prevButton.addEventListener('click', () => {
             prevSlide();
             resetInterval();
@@ -346,16 +380,32 @@
             resetInterval();
         });
 
-        // 初期化
-        createDots();
-        updateSlideDisplay();
-        startAutoSlide(); // ページロード時に自動切り替えを開始
-
-        // マウスオーバーで自動切り替えを一時停止
         const heroCarousel = document.getElementById('hero-carousel');
         heroCarousel.addEventListener('mouseenter', () => clearInterval(slideInterval));
         heroCarousel.addEventListener('mouseleave', () => startAutoSlide());
 
+        // 初期化
+        createDots();
+        updateSlideDisplay();
+        startAutoSlide();
+
+        // お問い合わせフォームの処理 (Formsubmit対応)
+        document.addEventListener('DOMContentLoaded', function() {
+            const formMessage = document.getElementById('form-message');
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('success') === 'true') {
+                formMessage.textContent = 'お問い合わせありがとうございます。内容を送信しました。';
+                formMessage.classList.remove('hidden');
+                formMessage.classList.add('text-green-400');
+
+                // URLからクエリパラメータを削除してリフレッシュ時の再表示を防ぐ
+                history.replaceState({}, document.title, window.location.pathname);
+
+                setTimeout(() => {
+                    formMessage.classList.add('hidden');
+                }, 5000);
+            }
+        });
     </script>
 
 </body>
