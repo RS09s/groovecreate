@@ -401,9 +401,6 @@
                 formMessage.classList.remove('hidden');
                 formMessage.classList.add('text-green-400');
 
-                // URLからクエリパラメータを削除してリフレッシュ時の再表示を防ぐ
-                history.replaceState({}, document.title, window.location.pathname);
-
                 setTimeout(() => {
                     formMessage.classList.add('hidden');
                 }, 5000);
