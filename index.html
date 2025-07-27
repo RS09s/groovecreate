@@ -15,12 +15,7 @@
         /* 日本語フォントと英語フォントの指定 */
         body {
             font-family: 'Inter', 'Noto Sans JP', sans-serif;
-            /* ↓↓↓ここに背景画像のURLを挿入してください↓↓↓ */
-            background-image: url('images/back.png');
-            /* ↑↑↑ここに背景画像のURLを挿入してください↑↑↑ */
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed; /* スクロールしても背景を固定 */
+            background-color: #0F172A; /* gray-950に近い色 */
         }
         /* Playfair Display フォントのユーティリティクラス */
         .font-playfair {
@@ -62,7 +57,7 @@
         }
     </style>
 </head>
-<body class="text-gray-400">
+<body class="bg-gray-950 text-gray-400">
 
     <!-- ヘッダー -->
     <!-- 背景色を白に変更し、テキスト色を調整 -->
@@ -71,13 +66,13 @@
             <div class="flex justify-between items-center">
                 <div class="text-xl font-bold text-gray-900">
                     <!-- ロゴ画像を<img>タグに置き換え、ユーザーが挿入できるようにコメントを追加 -->
-                    <a href="https://rs09s.github.io/groovecreate/" class="flex items-center">
-                        <!-- 
+                    <a href="https://groove-create.com/" class="flex items-center">
+                        <!--
                             ここにあなたのロゴ画像のURLを挿入してください。
                             背景を透過させたい場合は、PNG形式などの透過背景を持つ画像を使用してください。
-                            例: <img src="あなたのロゴ画像のURL.png" alt="株式会社groove create ロゴ" class="h-8 md:h-10 w-auto"> 
+                            例: <img src="あなたのロゴ画像のURL.png" alt="株式会社groove create ロゴ" class="h-8 md:h-10 w-auto">
                         -->
-                        <img src="images/logo-01.png" alt="株式会社groove create ロゴ" class="h-8 md:h-10 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/200x50/ffffff/000000?text=Logo';">
+                        <img src="images/logo-01.png" alt="株式会社groove create ロゴ" class="h-8 md:h-10 w-auto">
                     </a>
                 </div>
                 <nav class="hidden md:flex items-center space-x-8">
@@ -102,71 +97,68 @@
     </header>
 
 <main>
-    <!-- メインビジュアルセクション (このセクションは変更なし) -->
-    <section class="relative h-screen min-h-[700px] overflow-hidden">
+    <!-- メインビジュアルセクション -->
+    <!-- 修正点: `min-h-screen` を `h-[50vh] md:min-h-screen` に変更し、モバイルでの高さを調整 -->
+    <section class="relative flex items-center justify-center h-[50vh] md:min-h-screen overflow-hidden">
         <!-- 背景カルーセル -->
-        <div id="hero-carousel" class="absolute inset-0 w-full h-full z-0">
-            <!-- スライド 1 -->
-            <div class="carousel-slide active">
-                <img src="images/top5.png" alt="メインビジュアル1" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/1920x1080/1E293B/FFFFFF?text=Slide+1';">
-            </div>
-            <!-- スライド 2 -->
-            <div class="carousel-slide">
-                <img src="images/top6.png" alt="メインビジュアル2" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/1920x1080/334155/FFFFFF?text=Slide+2';">
-            </div>
-            <!-- スライド 3 -->
-            <div class="carousel-slide">
-                <img src="images/top8.png" alt="メインビジュアル3" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/1920x1080/475569/FFFFFF?text=Slide+3';">
-            </div>
+        <!-- 注意: 以下の`<img>`タグは現在一つしかなく、カルーセル機能（JavaScript部分）に対応していません。
+             複数の画像をカルーセルとして表示したい場合は、各画像を `.carousel-slide` クラスを持つ `div` で囲む必要があります。
+             例: <div class="carousel-slide active"><img src="images/top9.png" ...></div>
+             <div class="carousel-slide"><img src="images/top10.png" ...></div>
+        -->
+        <div class="absolute inset-0 w-full h-full z-0">
+            <img src="images/top9.png" alt="メインビジュアル1" class="absolute inset-0 w-full h-full object-cover z-0">
         </div>
-        
         <!-- グラデーションオーバーレイの透過度を調整 -->
         <div class="absolute inset-0 bg-gradient-to-r from-gray-950 to-transparent z-10"></div>
 
         <!-- テキストコンテンツ -->
         <!-- bottom の値を調整し、見出しと段落のサイズを小さく -->
-        <div class="absolute bottom-16 left-0 right-0 mx-auto px-7 z-20">
-            <div class="max-w-xl text-left">
+        <!-- 修正点: `max-w-1xl` は Tailwind CSS の標準クラスではないため `max-w-xl` に変更 -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-7 z-20 w-full">
+            <div class="max-w-xl mx-auto text-center">
                 <!-- フォントサイズをさらに小さく調整 -->
-                <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight fade-in-up text-white font-playfair">心が躍る"創造"を、<br>世界の日常に。</h1>
+                <h1 class="text-xl md:text-2xl font-bold mb-4 leading-tight fade-in-up text-white font-playfair">心が躍る"創造"を、世界の日常に。</h1>
                 <!-- フォントサイズをさらに小さく調整 -->
                 <p class="text-xs md:text-lg text-gray-300 fade-in-up" style="transition-delay: 0.2s;">私たちはテクノロジーと人の温もりを融合させ、新たな価値を提供します。</p>
             </div>
         </div>
 
-        <!-- カルーセルナビゲーション -->
-        <button id="prev-slide" class="absolute left-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-3 rounded-full z-20 transition-all duration-300">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <button id="next-slide" class="absolute right-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-3 rounded-full z-20 transition-all duration-300">
-            <i class="fas fa-chevron-right"></i>
-        </button>
-        <div id="carousel-dots" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-3"></div>
+
     </section>
     
     <!-- 私たちについて -->
-    <section id="about" class="py-24 md:py-32 bg-gray-900/90 backdrop-blur-sm">
+    <section id="about" class="py-24 md:py-32 bg-gray-900">
         <div class="container mx-auto px-6 text-center">
             <!-- text-gradient を削除し、text-white を適用 -->
-            <h2 class="section-title mb-4 fade-in-up"><span class="text-white">Our vision</span></h2>
-            <p class="text-gray-400 max-w-3xl mx-auto mb-20 fade-in-up">「創造が循環する社会へ。」<br>私たちは創造のエネルギーが人から人へ伝わり、連鎖することで、新たな価値や文化が生まれる社会の実現を目指します。</p>
-            <div class="grid md:grid-cols-2 gap-16 items-center">
-                <div class="fade-in-up">
-                    <img src="images/mid2.jpg" alt="会社ロゴ" class="rounded-lg shadow-2xl shadow-gray-700/20 w-full" onerror="this.onerror=null;this.src='https://placehold.co/600x400/334155/FFFFFF?text=Vision+Image';">
-                </div>
-                <div class="text-left fade-in-up" style="transition-delay: 0.2s;">
-                    <h3 class="text-3xl font-bold text-white mb-6">Values</h3>
-                    <p class="text-gray-400 mb-4 leading-relaxed">1. Groove First：楽しさやリズム感を大切に、感性に響く体験をデザインする。</p>
-                    <p class="text-gray-400 mb-4 leading-relaxed">2. Create Boldly：既成概念にとらわれず、大胆に創造し続ける。</p>
-                    <p class="text-gray-400 mb-4 leading-relaxed">3. Connect Deeply：人・社会・カルチャーと深くつながる。</p>
-                    <p class="text-gray-400 mb-4 leading-relaxed">4. Flow Together：多様なチームと調和し、共創の力を最大化する。</p>
+            <h2 class="section-title mb-4 fade-in-up"><span class="text-white">Vision</span></h2>
+            <p class="text-gray-500 max-w-3xl mx-auto mb-20 fade-in-up">「創造が循環する社会へ。」<br>私たちは創造のエネルギーが人から人へ伝わり、連鎖することで、新たな価値や文化が生まれる社会の実現を目指します。</p>
+            
+
+<div class="grid md:grid-cols-1 gap-16 items-center">
+        <!--        <div class="fade-in-up">
+                        <img src="images/mid2.jpg" alt="会社ロゴ" class="rounded-lg shadow-2xl shadow-gray-700/20 w-full">
+                    </div>
+-->
+
+
+                <div class="py-24 md:py-32 bg-gray-900" style="transition-delay: 0.2s;">
+                    <h2 class="section-title mb-4 fade-in-up"><span class="text-white">Values</span></h2>
+                    <p class="text-gray-500 mb-4 leading-relaxed">1. Groove First：楽しさやリズム感を大切に、感性に響く体験をデザインする。</p>
+                    <p class="text-gray-500 mb-4 leading-relaxed">2. Create Boldly：既成概念にとらわれず、大胆に創造し続ける。</p>
+                    <p class="text-gray-500 mb-4 leading-relaxed">3. Connect Deeply：人・社会・カルチャーと深くつながる。</p>
+                    <p class="text-gray-500 mb-4 leading-relaxed">4. Flow Together：多様なチームと調和し、共創の力を最大化する。</p>
+                    
+      <!--           
+<p class="text-gray-500 leading-relaxed">私たちはテクノロジーと人の温もりを融合させ、忘れられない体験を創造します。</p> -->
+
                 </div>
             </div>
 
 <!-- 会社情報セクションの追加 -->
             <div class="mt-20 fade-in-up">
                 <!-- 会社情報見出しを削除 -->
-                <div class="bg-gray-800/70 backdrop-blur-sm p-8 rounded-xl border border-gray-700 max-w-2xl mx-auto text-left">
+                <div class="bg-gray-800/50 p-8 rounded-xl border border-gray-700 max-w-2xl mx-auto text-left">
                     <!-- 縦に項目が並ぶおしゃれな表に変更 -->
                     <div class="space-y-6">
                         <div class="border-b border-gray-700 pb-4">
@@ -176,7 +168,7 @@
                         <div class="border-b border-gray-700 pb-4">
                             <p class="font-semibold text-gray-300 text-lg">事業内容</p>
                             <ul class="list-disc list-inside text-gray-400 text-base pl-4">
-                                <li>訪日外国人向け観光予約代行サービス</li>
+                                <li>訪日外国人向け観光予約代行サービス（開発中）</li>
                                 <li>不動産/経営コンサルティング</li>
                             </ul>
                         </div>
@@ -199,25 +191,28 @@
                     </div>
                 </div>
             </div>
+
+            
         </div>
     </section>
 
     <!-- 事業内容 -->
-    <section id="services" class="py-24 md:py-32 bg-gray-950/90 backdrop-blur-sm">
+
+    <section id="services" class="py-24 md:py-32 bg-gray-950">
         <div class="container mx-auto px-6">
-            <h2 class="section-title text-center mb-20 fade-in-up">事業内容</h2>
+            <h2 class="section-title text-center mb-20 fade-in-up"><span class="text-white">事業内容</span></h2>
             <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                 <!-- カード1 -->
                 <!-- ホバー時のシャドウ効果を追加 -->
-                <div class="bg-gray-900/80 p-8 rounded-xl border border-gray-800 hover:border-gray-600 hover:-translate-y-2 transition-all duration-300 fade-in-up hover:shadow-xl">
-                    <div class="text-gray-300 mb-6 inline-block bg-gray-800/50 p-4 rounded-full"><i class="fa-solid fa-desktop fa-2x"></i></div>
+                <div class="bg-gray-900 p-8 rounded-xl border border-gray-800 hover:border-gray-600 hover:-translate-y-2 transition-all duration-300 fade-in-up hover:shadow-xl">
+                    <div class="text-gray-300 mb-6 inline-block bg-gray-900/50 p-4 rounded-full"><i class="fa-solid fa-desktop fa-2x"></i></div>
                     <h3 class="text-xl font-bold text-white mb-3">訪日外国人向け観光予約代行サービス（開発中）</h3>
                     <p class="text-gray-500">ローカルが真におすすめする日本の体験を複数レコメンドし、一括代行予約を実施いたします。</p>
                 </div>
                 <!-- カード2 -->
                 <!-- ホバー時のシャドウ効果を追加 -->
-                <div class="bg-gray-900/80 p-8 rounded-xl border border-gray-800 hover:border-gray-600 hover:-translate-y-2 transition-all duration-300 fade-in-up hover:shadow-xl" style="transition-delay: 0.2s;">
-                    <div class="text-gray-300 mb-6 inline-block bg-gray-800/50 p-4 rounded-full"><i class="fa-solid fa-building fa-2x"></i></div>
+                <div class="bg-gray-900 p-8 rounded-xl border border-gray-800 hover:border-gray-600 hover:-translate-y-2 transition-all duration-300 fade-in-up hover:shadow-xl" style="transition-delay: 0.2s;">
+                    <div class="text-gray-300 mb-6 inline-block bg-gray-900/50 p-4 rounded-full"><i class="fa-solid fa-building fa-2x"></i></div>
                     <h3 class="text-xl font-bold text-white mb-3">不動産/経営コンサルティング</h3>
                     <p class="text-gray-500">あなたに合わせた収益改善をご提案いたします。</p>
                 </div>
@@ -226,58 +221,69 @@
     </section>
     
     <!-- お知らせ -->
-    <section id="news" class="py-24 md:py-32 bg-gray-900/90 backdrop-blur-sm">
+    <section id="news" class="py-24 md:py-32 bg-gray-900">
         <div class="container mx-auto px-6">
-            <h2 class="section-title text-center mb-20 fade-in-up">お知らせ</h2>
+            <h2 class="section-title text-center mb-20 fade-in-up"><span class="text-white">お知らせ</span></h2>
             <div class="space-y-6 max-w-4xl mx-auto fade-in-up">
-                <a href="https://rs09s.github.io/groovecreate/" class="block bg-gray-950/70 p-6 rounded-lg border border-gray-800 hover:border-gray-600 hover:bg-gray-900/80 transition-all duration-300">
+                <a class="block bg-gray-950/50 p-6 rounded-lg border border-gray-800 hover:border-gray-600 hover:bg-gray-900/70 transition-all duration-300">
                     <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                         <p class="text-gray-500 text-sm">2025.07.01</p>
                         <span class="text-xs bg-gray-300 text-gray-900 font-semibold px-3 py-1 rounded-full self-start">サービス</span>
                     </div>
                     <h3 class="text-lg font-semibold text-white mt-3">訪日外国人向け観光予約代行サービス鋭意開発中。</h3>
                 </a>
-                <a href="https://rs09s.github.io/groovecreate/" class="block bg-gray-950/70 p-6 rounded-lg border border-gray-800 hover:border-gray-600 hover:bg-gray-900/80 transition-all duration-300">
+                <a class="block bg-gray-950/50 p-6 rounded-lg border border-gray-800 hover:border-gray-600 hover:bg-gray-900/70 transition-all duration-300">
                     <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                         <p class="text-gray-500 text-sm">2024.07.01</p>
-                        <span class="text-xs bg-gray-300 text-gray-900 font-semibold px-3 py-1 rounded-full self-start">会社</span>
+                        <!--<span class="text-xs bg-gray-700 text-gray-200 font-semibold px-3 py-1 rounded-full self-start">サービス</span>-->
+                         <span class="text-xs bg-gray-300 text-gray-900 font-semibold px-3 py-1 rounded-full self-start">会社</span>
                     </div>
                     <h3 class="text-lg font-semibold text-white mt-3">株式会社groove create設立。</h3>
                 </a>
             </div>
+            <!--
+            <div class="text-center mt-16 fade-in-up">
+                <a href="#" class="bg-gray-800 text-white px-8 py-3 rounded-full hover:bg-gray-700 transition duration-300 font-semibold">もっと見る</a>
+            </div>
+                -->
         </div>
     </section>
 
     <!-- お問い合わせ -->
-    <section id="contact" class="py-24 md:py-32 bg-gray-950/90 backdrop-blur-sm">
+    <section id="contact" class="py-24 md:py-32 bg-gray-950">
         <div class="container mx-auto px-6 fade-in-up">
             <div class="text-center">
                 <h2 class="section-title mb-4">お問い合わせ</h2>
                 <p class="text-gray-500 max-w-2xl mx-auto mb-12">サービスに関するご質問やご相談など、お気軽にお問い合わせください。</p>
             </div>
-            <div class="max-w-2xl mx-auto bg-gray-900/70 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-800">
+            <div class="max-w-2xl mx-auto bg-gray-900/50 p-8 rounded-xl shadow-lg border border-gray-800">
                 <!-- Formsubmit の設定 -->
                 <form id="contact-form" action="https://formsubmit.co/sakamoto@groove-create.com" method="POST">
-                    <!-- 
-                        ↑↑↑ ここにあなたのメールアドレスを設定してください ↑↑↑ 
-                        例: action="https://formsubmit.co/sakamoto@groove-create.com" 
-                        Formsubmitの詳しい使い方は公式サイトをご確認ください: https://formsubmit.co/ 
+                    <!--
+                        ↑↑↑ ここにあなたのメールアドレスを設定してください ↑↑↑
+                        例: action="https://formsubmit.co/sakamoto@groove-create.com"
+                        Formsubmitの詳しい使い方は公式サイトをご確認ください: https://formsubmit.co/
                     -->
-                    <input type="hidden" name="_next" value="https://rs09s.github.io/groovecreate/#contact?success=true">
+                    <input type="hidden" name="_next" value="https://groove-create.com/#contact?success=true">
+                    <!--
+                        ↑↑↑ 上記の "YOUR_SITE_URL" をあなたのサイトのURLに置き換えてください。
+                        これにより、フォーム送信後にこのページに戻り、成功メッセージが表示されます。
+                        例: value="https://www.yourwebsite.com/?success=true"
+                    -->
                     <input type="text" name="_honey" style="display:none"> <!-- スパム対策のハニーポット -->
                     <input type="hidden" name="_captcha" value="false"> <!-- CAPTCHAを無効化（任意） -->
 
                     <div class="mb-6">
                         <label for="name" class="block text-gray-400 font-semibold mb-2">お名前</label>
-                        <input type="text" id="name" name="name" class="w-full px-4 py-3 bg-gray-800/80 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 text-white" required>
+                        <input type="text" id="name" name="name" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 text-white" required>
                     </div>
                     <div class="mb-6">
                         <label for="email" class="block text-gray-400 font-semibold mb-2">メールアドレス</label>
-                        <input type="email" id="email" name="email" class="w-full px-4 py-3 bg-gray-800/80 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 text-white" required>
+                        <input type="email" id="email" name="email" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 text-white" required>
                     </div>
                     <div class="mb-8">
                         <label for="message" class="block text-gray-400 font-semibold mb-2">お問い合わせ内容</label>
-                        <textarea id="message" name="message" rows="5" class="w-full px-4 py-3 bg-gray-800/80 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 text-white" required></textarea>
+                        <textarea id="message" name="message" rows="5" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-600 text-white" required></textarea>
                     </div>
                     <div class="text-center">
                         <button type="submit" class="w-full bg-gray-700 text-white font-bold py-3 px-8 rounded-full hover:bg-gray-800 transition duration-300 shadow-lg hover:shadow-gray-700/50">送信する</button>
@@ -290,12 +296,12 @@
 </main>
 
     <!-- フッター -->
-    <footer class="bg-gray-900/90 backdrop-blur-sm text-white border-t border-gray-800">
+    <footer class="bg-gray-900 text-white border-t border-gray-800">
         <div class="container mx-auto px-6 py-16">
-            <div class="grid md:grid-cols-3 gap-10 mb-10">
+            <div class="grid md:grid-cols-2 gap-10 mb-10">
                 <div>
                     <h3 class="text-xl font-bold mb-4">株式会社groove create</h3>
-                    <p class="text-gray-500 text-sm">〒272-0121<br>千葉県市川市末広１丁目１９番７</p>
+                    <!--<p class="text-gray-500 text-sm">〒272-0121<br>千葉県市川市末広１丁目１９番７</p>-->
                 </div>
                 <div>
                     <h3 class="text-lg font-semibold mb-4">サイトマップ</h3>
@@ -303,7 +309,9 @@
                         <li><a href="#about" class="text-gray-500 hover:text-gray-300 transition">会社概要</a></li>
                         <li><a href="#services" class="text-gray-500 hover:text-gray-300 transition">事業内容</a></li>
                         <li><a href="#news" class="text-gray-500 hover:text-gray-300 transition">お知らせ</a></li>
-                        <li><a href="#" class="text-gray-500 hover:text-gray-300 transition">プライバシーポリシー</a></li>
+                        <!--
+            <li><a href="#" class="text-gray-500 hover:text-gray-300 transition">プライバシーポリシー</a></li>
+            -->
                     </ul>
                 </div>
                <!--<div>
@@ -341,6 +349,8 @@
         elementsToAnimate.forEach(el => observer.observe(el));
 
         // カルーセル機能
+        // 注意: 現在のHTMLでは単一の画像が直接配置されており、カルーセルスライド(`.carousel-slide`クラスを持つ要素)が存在しません。
+        // もしカルーセル機能を使用する場合は、HTMLのメインビジュアル部分に複数の画像を`.carousel-slide`で囲んで追加する必要があります。
         const slides = document.querySelectorAll('.carousel-slide');
         const prevButton = document.getElementById('prev-slide');
         const nextButton = document.getElementById('next-slide');
@@ -349,6 +359,7 @@
         let slideInterval;
 
         function createDots() {
+            if (slides.length === 0 || !dotsContainer) return; // スライドがない場合やコンテナがない場合は処理しない
             slides.forEach((_, index) => {
                 const dot = document.createElement('span');
                 dot.classList.add('w-3', 'h-3', 'bg-white/40', 'rounded-full', 'cursor-pointer', 'transition-all', 'duration-300');
@@ -362,6 +373,7 @@
         }
 
         function updateSlideDisplay() {
+            if (slides.length === 0) return; // スライドがない場合は処理しない
             slides.forEach((slide, index) => {
                 slide.classList.toggle('active', index === currentSlide);
             });
@@ -369,6 +381,7 @@
         }
 
         function updateDots() {
+            if (!dotsContainer) return; // コンテナがない場合は処理しない
             const dots = dotsContainer.querySelectorAll('span');
             dots.forEach((dot, index) => {
                 if (index === currentSlide) {
@@ -397,7 +410,9 @@
         }
 
         function startAutoSlide() {
-            slideInterval = setInterval(nextSlide, 5000);
+            if (slides.length > 1) { // 複数のスライドがある場合のみ自動スライドを開始
+                slideInterval = setInterval(nextSlide, 5000);
+            }
         }
 
         function resetInterval() {
@@ -405,23 +420,35 @@
             startAutoSlide();
         }
 
-        prevButton.addEventListener('click', () => {
-            prevSlide();
-            resetInterval();
-        });
-        nextButton.addEventListener('click', () => {
-            nextSlide();
-            resetInterval();
-        });
-
+        // prevButtonとnextButtonのイベントリスナーは、ボタンが存在する場合のみ追加
+        if (prevButton) {
+            prevButton.addEventListener('click', () => {
+                prevSlide();
+                resetInterval();
+            });
+        }
+        if (nextButton) {
+            nextButton.addEventListener('click', () => {
+                nextSlide();
+                resetInterval();
+            });
+        }
+        
+        // heroCarouselが存在する場合のみイベントリスナーを追加
         const heroCarousel = document.getElementById('hero-carousel');
-        heroCarousel.addEventListener('mouseenter', () => clearInterval(slideInterval));
-        heroCarousel.addEventListener('mouseleave', () => startAutoSlide());
+        if (heroCarousel) {
+            heroCarousel.addEventListener('mouseenter', () => clearInterval(slideInterval));
+            heroCarousel.addEventListener('mouseleave', () => startAutoSlide());
+        }
+
 
         // 初期化
-        createDots();
-        updateSlideDisplay();
-        startAutoSlide();
+        // スライドが存在する場合のみカルーセル関連の初期化を行う
+        if (slides.length > 0) {
+            createDots();
+            updateSlideDisplay();
+            startAutoSlide();
+        }
 
         // お問い合わせフォームの処理 (Formsubmit対応)
         document.addEventListener('DOMContentLoaded', function() {
