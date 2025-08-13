@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店舗カードの表示</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.15), 0 5px 10px -5px rgba(0, 0, 0, 0.05);
+        }
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+        }
+        input[type="checkbox"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            height: 24px;
+            width: 24px;
+            background-color: #e5e7eb;
+            border-radius: 6px;
+            border: 2px solid #9ca3af;
+            cursor: pointer;
+            position: relative;
+            outline: none;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        input[type="checkbox"]:checked {
+            background-color: #ec4899;
+            border-color: #ec4899;
+        }
+        input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+            width: 8px;
+            height: 14px;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+        }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .carousel-track > img, .day-slide {
+            width: 100%;
+            flex-shrink: 0;
+        }
+        .carousel-btn {
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #4a5568;
+            padding: 0.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.2s;
+            z-index: 10;
+        }
+        .carousel-btn:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* タイムライン用のスタイル */
+        .timeline-group {
+            position: relative;
+            margin-left: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .timeline-group:before {
+            content: '';
+            position: absolute;
+            left: 0.875rem;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #d1d5db; /* gray-300 */
+            border-radius: 9999px;
+        }
+
+        .timeline-group:last-child:before {
+            bottom: 2rem;
+        }
+
+        .timeline-header {
+            position: sticky;
+            top: 0;
+            background-color: #f3f4f6;
+            z-index: 20;
+            margin-left: -2rem;
+            padding: 1rem 0;
+        }
+
+        .timeline-header-content {
+            position: relative;
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: #f9fafb; /* gray-50 */
+            border-radius: 9999px;
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 700; /* font-bold */
+            color: #1f2937; /* gray-800 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .timeline-header-content:before {
+            content: '';
+            position: absolute;
+            left: -1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1rem;
+            height: 4px;
+            background-color: #d1d5db;
+        }
+
+        .timeline-header-content:after {
+            content: '';
+            position: absolute;
+            left: -1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background-color: #6b7280; /* gray-500 */
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-4">
+
+    <!-- メインコンテンツ -->
+    <div class="max-w-md mx-auto">
+        <h1 class="text-3xl font-bold text-center text-gray-900 my-8">店舗カードの表示</h1>
+        
+        <!-- タイムライン表示エリア -->
+        <div id="timeline-container" class="relative">
+            <!-- 各日のタイムラインがここに動的に挿入されます -->
+        </div>
+    </div>
+
+    <!-- モーダルウィンドウ -->
+    <div id="modal-container" class="hidden fixed inset-0 flex items-center justify-center p-4 z-50 modal-overlay">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all duration-300 scale-95 opacity-0" id="modal-content">
+            <div class="p-6 relative">
+                <button id="close-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <!-- モーダル内のカルーセル -->
+                <div id="modal-carousel-container" class="relative overflow-hidden rounded-t-xl w-full h-48 mb-4">
+                    <div id="modal-carousel-track" class="carousel-track h-full">
+                        <!-- Images will be dynamically added here -->
+                    </div>
+                    <button id="modal-prev-btn" class="carousel-btn absolute top-1/2 left-2 transform -translate-y-1/2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <button id="modal-next-btn" class="carousel-btn absolute top-1/2 right-2 transform -translate-y-1/2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+
+                <h2 id="modal-restaurant-name" class="text-2xl font-bold text-gray-900 mb-2"></h2>
+                <p id="modal-highlight" class="text-gray-600 mb-4"></p>
+                <div class="text-sm font-semibold text-gray-500">詳細情報</div>
+                <ul class="list-disc list-inside text-gray-700 space-y-1 mt-2">
+                    <li id="modal-genre"></li>
+                    <li id="modal-address"></li>
+                    <li id="modal-price"></li>
+                    <li id="modal-hours"></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const timelineContainer = document.getElementById('timeline-container');
+            const modalContainer = document.getElementById('modal-container');
+            const modalContent = document.getElementById('modal-content');
+            const closeModalBtn = document.getElementById('close-modal');
+            const modalImagePrevBtn = document.getElementById('modal-prev-btn');
+            const modalImageNextBtn = document.getElementById('modal-next-btn');
+            const modalImageTrack = document.getElementById('modal-carousel-track');
+
+            const restaurants = [
+                {
+                    "day": 1,
+                    "meal": "ランチ",
+                    "name": "築地 寿司清 本店",
+                    "highlight": "新鮮なネタと職人の技が光る老舗の寿司店。",
+                    "genre": "寿司",
+                    "address": "東京都中央区築地4-13-9",
+                    "price": "ランチ: ¥3,000〜",
+                    "hours": "平日 10:30-14:00, 16:30-22:00",
+                    "images": [
+                        "https://placehold.co/600x400/b3e0f2/000000?text=Sushi+Image+1",
+                        "https://placehold.co/600x400/96d4ed/000000?text=Sushi+Image+2",
+                        "https://placehold.co/600x400/80c2e3/000000?text=Sushi+Image+3"
+                    ]
+                },
+                {
+                    "day": 1,
+                    "meal": "ディナー",
+                    "name": "神楽坂 石かわ",
+                    "highlight": "洗練された日本料理を堪能できる、予約困難な名店。",
+                    "genre": "日本料理",
+                    "address": "東京都新宿区神楽坂5-37 高村ビル5F",
+                    "price": "ディナー: ¥40,000〜",
+                    "hours": "17:30-23:00 (L.O. 21:00)",
+                    "images": [
+                        "https://placehold.co/600x400/e0b3e3/000000?text=Japanese+Cuisine+1",
+                        "https://placehold.co/600x400/d496e0/000000?text=Japanese+Cuisine+2",
+                        "https://placehold.co/600x400/c280e3/000000?text=Japanese+Cuisine+3"
+                    ]
+                },
+                {
+                    "day": 2,
+                    "meal": "ランチ",
+                    "name": "東京ラーメン ストリート 六厘舎",
+                    "highlight": "濃厚なつけ汁と極太麺が絶妙に絡み合う、つけ麺の有名店。",
+                    "genre": "ラーメン",
+                    "address": "東京都千代田区丸の内1-9-1 東京駅一番街 B1",
+                    "price": "ランチ: ¥1,000〜",
+                    "hours": "7:30-9:30, 10:30-23:00",
+                    "images": [
+                        "https://placehold.co/600x400/b3d2f2/000000?text=Ramen+Image+1",
+                        "https://placehold.co/600x400/96c4ed/000000?text=Ramen+Image+2",
+                        "https://placehold.co/600x400/80b6e3/000000?text=Ramen+Image+3"
+                    ]
+                },
+                {
+                    "day": 2,
+                    "meal": "ディナー",
+                    "name": "銀座 アスター 本店",
+                    "highlight": "洗練された空間で、伝統的な中華料理を味わえる。",
+                    "genre": "中華料理",
+                    "address": "東京都中央区銀座3-5-1",
+                    "price": "ディナー: ¥8,000〜",
+                    "hours": "11:00-22:00 (L.O. 21:30)",
+                    "images": [
+                        "https://placehold.co/600x400/d2e3b3/000000?text=Chinese+Cuisine+1",
+                        "https://placehold.co/600x400/c4ed96/000000?text=Chinese+Cuisine+2",
+                        "https://placehold.co/600x400/b6e380/000000?text=Chinese+Cuisine+3"
+                    ]
+                },
+                {
+                    "day": 3,
+                    "meal": "ランチ",
+                    "name": "資生堂パーラー 銀座本店",
+                    "highlight": "美しい内装と丁寧なサービスで、特別な時間を過ごせる洋食レストラン。",
+                    "genre": "洋食",
+                    "address": "東京都中央区銀座8-8-3",
+                    "price": "ランチ: ¥5,000〜",
+                    "hours": "11:30-21:30 (L.O. 20:30)",
+                    "images": [
+                        "https://placehold.co/600x400/e3b3c2/000000?text=Western+Cuisine+1",
+                        "https://placehold.co/600x400/ed96b4/000000?text=Western+Cuisine+2",
+                        "https://placehold.co/600x400/e3809c/000000?text=Western+Cuisine+3"
+                    ]
+                },
+                {
+                    "day": 3,
+                    "meal": "ディナー",
+                    "name": "焼肉 ジャンボ はなれ",
+                    "highlight": "希少部位を堪能できる、焼肉好きにはたまらない名店。",
+                    "genre": "焼肉",
+                    "address": "東京都文京区本郷3-28-9",
+                    "price": "ディナー: ¥10,000〜",
+                    "hours": "17:00-24:00 (L.O. 23:00)",
+                    "images": [
+                        "https://placehold.co/600x400/b3c2e3/000000?text=Yakiniku+1",
+                        "https://placehold.co/600x400/96b4ed/000000?text=Yakiniku+2",
+                        "https://placehold.co/600x400/809ce3/000000?text=Yakiniku+3"
+                    ]
+                }
+            ];
+
+            // 日ごとにレストランをグループ化
+            const restaurantsByDay = restaurants.reduce((acc, current) => {
+                const day = current.day;
+                if (!acc[day]) {
+                    acc[day] = [];
+                }
+                acc[day].push(current);
+                return acc;
+            }, {});
+
+            const days = Object.keys(restaurantsByDay).map(Number).sort((a, b) => a - b);
+
+            // カード内の画像カルーセルをスライドさせる関数
+            function slideCardImageCarousel(cardTrack, direction) {
+                const totalSlides = cardTrack.children.length;
+                let currentSlide = parseInt(cardTrack.dataset.currentSlide || '0');
+                currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+                cardTrack.dataset.currentSlide = currentSlide;
+                cardTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+            }
+
+            // カード用カルーセルボタンのハンドラ
+            window.prevSlide = (cardIndex, event) => {
+                event.stopPropagation();
+                const card = document.querySelector(`.card[data-id="${cardIndex}"]`);
+                const track = card.querySelector('.carousel-track');
+                slideCardImageCarousel(track, -1);
+            };
+
+            window.nextSlide = (cardIndex, event) => {
+                event.stopPropagation();
+                const card = document.querySelector(`.card[data-id="${cardIndex}"]`);
+                const track = card.querySelector('.carousel-track');
+                slideCardImageCarousel(track, 1);
+            };
+
+            function renderRecommendations() {
+                timelineContainer.innerHTML = '';
+                days.forEach(day => {
+                    const timelineGroup = document.createElement('div');
+                    timelineGroup.className = 'timeline-group';
+                    
+                    const dayHeader = document.createElement('div');
+                    dayHeader.className = 'timeline-header';
+                    dayHeader.innerHTML = `<span class="timeline-header-content">${day}日目</span>`;
+                    timelineGroup.appendChild(dayHeader);
+
+                    const restaurantsForDay = restaurantsByDay[day];
+                    restaurantsForDay.forEach((restaurant, index) => {
+                        const globalIndex = restaurants.findIndex(r => r === restaurant);
+                        const imagesHtml = restaurant.images.map(img => `
+                            <img class="w-full h-48 object-cover flex-shrink-0" src="${img}" alt="${restaurant.name}の写真" onerror="this.onerror=null;this.src='https://placehold.co/600x400/94a3b8/ffffff?text=No+Image';">
+                        `).join('');
+
+                        const cardHtml = `
+                            <div class="card bg-white rounded-xl shadow-lg overflow-hidden my-6 p-4 ml-6" data-id="${globalIndex}">
+                                <div class="relative overflow-hidden rounded-t-xl h-48 mb-4">
+                                    <div class="carousel-track" data-current-slide="0">
+                                        ${imagesHtml}
+                                    </div>
+                                    <button class="carousel-btn absolute top-1/2 left-2 transform -translate-y-1/2" onclick="prevSlide(${globalIndex}, event)">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                                    </button>
+                                    <button class="carousel-btn absolute top-1/2 right-2 transform -translate-y-1/2" onclick="nextSlide(${globalIndex}, event)">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    </button>
+                                </div>
+                                
+                                <div class="p-5 pt-0">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <div class="text-sm font-semibold text-pink-600">${restaurant.meal}</div>
+                                        <div class="text-sm font-semibold text-gray-500">${restaurant.genre}</div>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-gray-800 mb-2">${restaurant.name}</h3>
+                                    <p class="text-gray-600 mb-4">${restaurant.highlight}</p>
+                                    <div class="flex items-center justify-between">
+                                        <button class="flex-grow bg-purple-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-purple-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50" onclick="openModal(${globalIndex}, event)">
+                                            詳細を見る
+                                        </button>
+                                        <div class="flex items-center ml-4">
+                                            <input type="checkbox" id="checkbox-${globalIndex}" class="form-checkbox h-6 w-6 text-pink-600 rounded-md transition-colors duration-200" checked>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        timelineGroup.insertAdjacentHTML('beforeend', cardHtml);
+                    });
+                    timelineContainer.appendChild(timelineGroup);
+                });
+            }
+
+            // モーダル用画像カルーセルボタンのハンドラ
+            modalImagePrevBtn.addEventListener('click', () => slideCardImageCarousel(modalImageTrack, -1));
+            modalImageNextBtn.addEventListener('click', () => slideCardImageCarousel(modalImageTrack, 1));
+            
+            window.openModal = (cardIndex, event) => {
+                event.stopPropagation();
+                const restaurant = restaurants[cardIndex];
+                if (restaurant) {
+                    modalImageTrack.innerHTML = '';
+                    modalImageTrack.dataset.currentSlide = 0;
+                    modalImageTrack.style.transform = 'translateX(0)';
+
+                    restaurant.images.forEach(img => {
+                        const imgElement = document.createElement('img');
+                        imgElement.className = 'w-full h-full object-cover flex-shrink-0';
+                        imgElement.src = img;
+                        imgElement.alt = `${restaurant.name}の写真`;
+                        imgElement.onerror = () => imgElement.src = 'https://placehold.co/600x400/94a3b8/ffffff?text=No+Image';
+                        modalImageTrack.appendChild(imgElement);
+                    });
+
+                    document.getElementById('modal-restaurant-name').textContent = restaurant.name;
+                    document.getElementById('modal-highlight').textContent = restaurant.highlight;
+                    document.getElementById('modal-genre').textContent = `ジャンル: ${restaurant.genre}`;
+                    document.getElementById('modal-address').textContent = `住所: ${restaurant.address}`;
+                    document.getElementById('modal-price').textContent = `金額: ${restaurant.price}`;
+                    document.getElementById('modal-hours').textContent = `営業時間: ${restaurant.hours}`;
+                    
+                    modalContainer.classList.remove('hidden');
+                    setTimeout(() => {
+                        modalContent.classList.remove('scale-95', 'opacity-0');
+                        modalContent.classList.add('scale-100', 'opacity-100');
+                    }, 10);
+                }
+            };
+
+            closeModalBtn.addEventListener('click', () => {
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modalContainer.classList.add('hidden');
+                }, 300);
+            });
+
+            modalContainer.addEventListener('click', (event) => {
+                if (event.target === modalContainer) {
+                    closeModalBtn.click();
+                }
+            });
+            
+            renderRecommendations();
+        });
+    </script>
+</body>
+</html>
