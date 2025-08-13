@@ -80,19 +80,25 @@
     <!-- メインコンテンツ -->
     <div class="max-w-md mx-auto">
         <h1 class="text-3xl font-bold text-center text-gray-900 my-8">店舗カードの表示</h1>
-
-        <!-- 日ごとのレコメンドを切り替えるカルーセル -->
+        
+        <!-- 日ごとのレコメンドを切り替えるためのボタンとページング表示 -->
+        <div class="relative flex items-center justify-center mb-6">
+            <button id="day-prev-btn" class="carousel-btn absolute left-0 z-10 hidden">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+            <div class="flex items-center justify-center text-xl font-bold text-gray-800">
+                <span id="current-day-label"></span>
+            </div>
+            <button id="day-next-btn" class="carousel-btn absolute right-0 z-10">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+        </div>
+        
+        <!-- 日ごとの店舗カード表示エリア -->
         <div class="relative w-full overflow-hidden">
             <div id="day-carousel-track" class="carousel-track">
                 <!-- 各日のスライドがここに動的に挿入されます -->
             </div>
-            
-            <button id="day-prev-btn" class="carousel-btn absolute top-1/2 left-2 transform -translate-y-1/2 z-10 hidden">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-            </button>
-            <button id="day-next-btn" class="carousel-btn absolute top-1/2 right-2 transform -translate-y-1/2 z-10">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-            </button>
         </div>
     </div>
 
@@ -137,6 +143,7 @@
             const dayCarouselTrack = document.getElementById('day-carousel-track');
             const dayPrevBtn = document.getElementById('day-prev-btn');
             const dayNextBtn = document.getElementById('day-next-btn');
+            const currentDayLabel = document.getElementById('current-day-label');
             const modalContainer = document.getElementById('modal-container');
             const modalContent = document.getElementById('modal-content');
             const closeModalBtn = document.getElementById('close-modal');
@@ -255,13 +262,14 @@
             function slideDayCarousel(direction) {
                 currentDayIndex = (currentDayIndex + direction + totalDays) % totalDays;
                 dayCarouselTrack.style.transform = `translateX(-${currentDayIndex * 100}%)`;
-                updateDayButtons();
+                updateDayButtonsAndLabel();
             }
 
-            // 日ごとのカルーセルボタンの表示を更新
-            function updateDayButtons() {
+            // 日ごとのカルーセルボタンとラベルの表示を更新
+            function updateDayButtonsAndLabel() {
                 dayPrevBtn.classList.toggle('hidden', currentDayIndex === 0);
                 dayNextBtn.classList.toggle('hidden', currentDayIndex === totalDays - 1);
+                currentDayLabel.textContent = `${days[currentDayIndex]}日目`;
             }
 
             // カード内の画像カルーセルをスライドさせる関数
@@ -293,17 +301,6 @@
                 days.forEach(day => {
                     const daySlide = document.createElement('div');
                     daySlide.className = 'day-slide p-4';
-                    
-                    const dayHeader = document.createElement('div');
-                    dayHeader.className = 'relative flex items-center justify-center py-4 mb-4';
-                    dayHeader.innerHTML = `
-                        <div class="flex-grow border-t border-gray-300"></div>
-                        <span class="flex-shrink mx-4 text-xl font-bold text-gray-800 bg-white px-4 py-2 rounded-full shadow-md">
-                            ${day}日目
-                        </span>
-                        <div class="flex-grow border-t border-gray-300"></div>
-                    `;
-                    daySlide.appendChild(dayHeader);
 
                     const restaurantsForDay = restaurantsByDay[day];
                     restaurantsForDay.forEach((restaurant, index) => {
@@ -405,7 +402,7 @@
             });
             
             renderRecommendations();
-            updateDayButtons();
+            updateDayButtonsAndLabel();
         });
     </script>
 </body>
