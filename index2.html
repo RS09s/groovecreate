@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI飲食店レコメンド</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.15), 0 5px 10px -5px rgba(0, 0, 0, 0.05);
+        }
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+        }
+        input[type="checkbox"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            height: 24px;
+            width: 24px;
+            background-color: #e5e7eb;
+            border-radius: 6px;
+            border: 2px solid #9ca3af;
+            cursor: pointer;
+            position: relative;
+            outline: none;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        input[type="checkbox"]:checked {
+            background-color: #ec4899;
+            border-color: #ec4899;
+        }
+        input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+            width: 8px;
+            height: 14px;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+        }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .carousel-track > img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .carousel-btn {
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #4a5568;
+            padding: 0.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.2s;
+            z-index: 10;
+        }
+        .carousel-btn:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-4">
+
+    <!-- メインコンテンツ -->
+    <div class="max-w-md mx-auto">
+        <h1 class="text-3xl font-bold text-center text-gray-900 my-8">AI飲食店レコメンド</h1>
+
+        <!-- ユーザー入力セクション -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">どんなお店をお探しですか？</h2>
+            <textarea id="prompt-input" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 mb-4" placeholder="例：記念日にぴったりの落ち着いた雰囲気のフレンチレストラン、友人との気軽なランチ、辛いものが食べたい、など"></textarea>
+            <button id="generate-btn" class="w-full bg-purple-600 text-white font-bold py-3 rounded-lg shadow-md hover:bg-purple-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
+                レコメンドを生成
+            </button>
+        </div>
+
+        <!-- ローディングインジケーター -->
+        <div id="loading-spinner" class="hidden flex justify-center items-center h-48">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
+        </div>
+
+        <!-- 各日のレコメンド -->
+        <div id="recommendations"></div>
+    </div>
+
+    <!-- モーダルウィンドウ -->
+    <div id="modal-container" class="hidden fixed inset-0 flex items-center justify-center p-4 z-50 modal-overlay">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all duration-300 scale-95 opacity-0" id="modal-content">
+            <div class="p-6 relative">
+                <button id="close-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <!-- モーダル内のカルーセル -->
+                <div id="modal-carousel-container" class="relative overflow-hidden rounded-t-xl w-full h-48 mb-4">
+                    <div id="modal-carousel-track" class="carousel-track h-full">
+                        <!-- Images will be dynamically added here -->
+                    </div>
+                    <button id="modal-prev-btn" class="carousel-btn absolute top-1/2 left-2 transform -translate-y-1/2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <button id="modal-next-btn" class="carousel-btn absolute top-1/2 right-2 transform -translate-y-1/2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+
+                <h2 id="modal-restaurant-name" class="text-2xl font-bold text-gray-900 mb-2"></h2>
+                <p id="modal-highlight" class="text-gray-600 mb-4"></p>
+                <div class="text-sm font-semibold text-gray-500">詳細情報</div>
+                <ul class="list-disc list-inside text-gray-700 space-y-1 mt-2">
+                    <li id="modal-genre"></li>
+                    <li id="modal-address"></li>
+                    <li id="modal-price"></li>
+                    <li id="modal-hours"></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const generateBtn = document.getElementById('generate-btn');
+            const promptInput = document.getElementById('prompt-input');
+            const recommendationsDiv = document.getElementById('recommendations');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const modalContainer = document.getElementById('modal-container');
+            const modalContent = document.getElementById('modal-content');
+            const closeModalBtn = document.getElementById('close-modal');
+            let restaurants = [];
+            let modalCurrentSlide = 0;
+
+            const apiKey = "";
+
+            async function generateRecommendations(userPrompt) {
+                recommendationsDiv.innerHTML = '';
+                loadingSpinner.classList.remove('hidden');
+                generateBtn.disabled = true;
+
+                // ユーザー入力が空欄の場合、デフォルトのプロンプトを使用
+                const actualPrompt = userPrompt.trim() || "日本の実在する店舗で、現在営業中の人気飲食店";
+
+                // プロンプトを修正し、Google検索結果に基づいて店舗情報を生成するように明確に指示
+                const textPrompt = `ユーザーの希望: "${actualPrompt}"
+                この希望に基づいて、**現在営業中**の**日本の実在する店舗**をGoogle検索で探し、**合計6件（3日間のランチとディナー）**の飲食店レコメンドプランを策定してください。
+                **最重要：店舗名は絶対に生成しないでください。検索結果に存在する実在する店舗名をそのまま引用してください。**
+                店舗名、住所、価格帯、営業時間などの店舗情報は、検索で取得した情報を**完全にそのまま利用し、架空の情報を一切混ぜないでください。**
+                また、各店舗について、**3枚のプレースホルダー画像URL**を\`images\`というキーの配列として返してください。
+                各店舗は以下のJSONスキーマに従って日本語で記述し、**必ず6つのオブジェクトを含む配列を返してください。**
+                **注意：AIが生成した情報ですので、必ず公式サイトなどで正確な情報をご確認ください。**
+
+                {
+                    "type": "ARRAY",
+                    "items": {
+                        "type": "OBJECT",
+                        "properties": {
+                            "day": { "type": "NUMBER" },
+                            "meal": { "type": "STRING" },
+                            "name": { "type": "STRING" },
+                            "highlight": { "type": "STRING" },
+                            "genre": { "type": "STRING" },
+                            "address": { "type": "STRING" },
+                            "price": { "type": "STRING" },
+                            "hours": { "type": "STRING" },
+                            "images": { "type": "ARRAY", "items": { "type": "STRING" } }
+                        }
+                    }
+                }`;
+                const chatHistory = [{ role: "user", parts: [{ text: textPrompt }] }];
+                const payload = {
+                    contents: chatHistory,
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "ARRAY",
+                            items: {
+                                type: "OBJECT",
+                                properties: {
+                                    "day": { "type": "NUMBER" },
+                                    "meal": { "type": "STRING" },
+                                    "name": { "type": "STRING" },
+                                    "highlight": { "type": "STRING" },
+                                    "genre": { "type": "STRING" },
+                                    "address": { "type": "STRING" },
+                                    "price": { "type": "STRING" },
+                                    "hours": { "type": "STRING" },
+                                    "images": { "type": "ARRAY", "items": { "type": "STRING" } }
+                                }
+                            }
+                        }
+                    }
+                };
+                const textApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                try {
+                    const textResponse = await fetch(textApiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!textResponse.ok) {
+                        throw new Error(`HTTP error! status: ${textResponse.status}`);
+                    }
+                    const textResult = await textResponse.json();
+                    
+                    if (textResult.candidates && textResult.candidates.length > 0) {
+                        const jsonText = textResult.candidates[0].content.parts[0].text;
+                        restaurants = JSON.parse(jsonText);
+                        renderRecommendations(restaurants);
+                    } else {
+                        throw new Error('API response format is unexpected.');
+                    }
+                } catch (error) {
+                    console.error('Error generating recommendations:', error);
+                    recommendationsDiv.innerHTML = '<p class="text-center text-red-500">レコメンドの生成に失敗しました。もう一度お試しください。</p>';
+                } finally {
+                    loadingSpinner.classList.add('hidden');
+                    generateBtn.disabled = false;
+                }
+            }
+
+            // カルーセルをスライドさせる関数
+            function slideCarousel(carouselTrack, direction) {
+                const totalSlides = carouselTrack.children.length;
+                let currentSlide = parseInt(carouselTrack.dataset.currentSlide || '0');
+                currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+                carouselTrack.dataset.currentSlide = currentSlide;
+                carouselTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+            }
+
+            // カード用カルーセルボタンのハンドラ
+            window.prevSlide = (cardIndex, event) => {
+                event.stopPropagation();
+                const card = document.querySelector(`.card[data-id="${cardIndex}"]`);
+                const track = card.querySelector('.carousel-track');
+                slideCarousel(track, -1);
+            };
+
+            window.nextSlide = (cardIndex, event) => {
+                event.stopPropagation();
+                const card = document.querySelector(`.card[data-id="${cardIndex}"]`);
+                const track = card.querySelector('.carousel-track');
+                slideCarousel(track, 1);
+            };
+
+            function renderRecommendations(restaurantsData) {
+                recommendationsDiv.innerHTML = '';
+                let currentDay = 0;
+                restaurantsData.forEach((restaurant, index) => {
+                    if (restaurant.day !== currentDay) {
+                        const dayHeader = document.createElement('h2');
+                        dayHeader.className = 'text-2xl font-bold text-gray-800 mt-10 mb-4 border-b-2 pb-2 border-gray-200';
+                        dayHeader.textContent = `${restaurant.day}日目`;
+                        recommendationsDiv.appendChild(dayHeader);
+                        currentDay = restaurant.day;
+                    }
+
+                    const imagesHtml = restaurant.images.map(img => `
+                        <img class="w-full h-48 object-cover flex-shrink-0" src="${img}" alt="${restaurant.name}の写真" onerror="this.onerror=null;this.src='https://placehold.co/600x400/94a3b8/ffffff?text=No+Image';">
+                    `).join('');
+
+                    const cardHtml = `
+                        <div class="card bg-white rounded-xl shadow-lg overflow-hidden mb-8" data-id="${index}">
+                            <div class="relative overflow-hidden rounded-t-xl h-48">
+                                <div class="carousel-track" data-current-slide="0" data-id="${index}">
+                                    ${imagesHtml}
+                                </div>
+                                <button class="carousel-btn absolute top-1/2 left-2 transform -translate-y-1/2" onclick="prevSlide(${index}, event)">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                                </button>
+                                <button class="carousel-btn absolute top-1/2 right-2 transform -translate-y-1/2" onclick="nextSlide(${index}, event)">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                </button>
+                            </div>
+                            
+                            <div class="p-5">
+                                <div class="flex justify-between items-center mb-2">
+                                    <div class="text-sm font-semibold text-pink-600">${restaurant.meal}</div>
+                                    <div class="text-sm font-semibold text-gray-500">${restaurant.genre}</div>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800 mb-2">${restaurant.name}</h3>
+                                <p class="text-gray-600 mb-4">${restaurant.highlight}</p>
+                                <div class="flex items-center justify-between">
+                                    <button class="flex-grow bg-purple-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-purple-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50" onclick="openModal(${index}, event)">
+                                        詳細を見る
+                                    </button>
+                                    <div class="flex items-center ml-4">
+                                        <input type="checkbox" id="checkbox-${index}" class="form-checkbox h-6 w-6 text-pink-600 rounded-md transition-colors duration-200" checked>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    recommendationsDiv.insertAdjacentHTML('beforeend', cardHtml);
+                });
+            }
+
+            // モーダル用カルーセルボタンのハンドラ
+            const modalPrevBtn = document.getElementById('modal-prev-btn');
+            const modalNextBtn = document.getElementById('modal-next-btn');
+            const modalTrack = document.getElementById('modal-carousel-track');
+
+            modalPrevBtn.addEventListener('click', () => slideCarousel(modalTrack, -1));
+            modalNextBtn.addEventListener('click', () => slideCarousel(modalTrack, 1));
+
+            window.openModal = (cardIndex, event) => {
+                event.stopPropagation();
+                const restaurant = restaurants[cardIndex];
+                if (restaurant) {
+                    // モーダル用カルーセルを初期化
+                    modalTrack.innerHTML = '';
+                    modalCurrentSlide = 0;
+                    modalTrack.style.transform = 'translateX(0)';
+
+                    // 画像を動的に追加
+                    restaurant.images.forEach(img => {
+                        const imgElement = document.createElement('img');
+                        imgElement.className = 'w-full h-full object-cover flex-shrink-0';
+                        imgElement.src = img;
+                        imgElement.alt = `${restaurant.name}の写真`;
+                        imgElement.onerror = () => imgElement.src = 'https://placehold.co/600x400/94a3b8/ffffff?text=No+Image';
+                        modalTrack.appendChild(imgElement);
+                    });
+
+                    document.getElementById('modal-restaurant-name').textContent = restaurant.name;
+                    document.getElementById('modal-highlight').textContent = restaurant.highlight;
+                    document.getElementById('modal-genre').textContent = `ジャンル: ${restaurant.genre}`;
+                    document.getElementById('modal-address').textContent = `住所: ${restaurant.address}`;
+                    document.getElementById('modal-price').textContent = `金額: ${restaurant.price}`;
+                    document.getElementById('modal-hours').textContent = `営業時間: ${restaurant.hours}`;
+                    
+                    modalContainer.classList.remove('hidden');
+                    setTimeout(() => {
+                        modalContent.classList.remove('scale-95', 'opacity-0');
+                        modalContent.classList.add('scale-100', 'opacity-100');
+                    }, 10);
+                }
+            };
+
+            closeModalBtn.addEventListener('click', () => {
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modalContainer.classList.add('hidden');
+                }, 300);
+            });
+
+            modalContainer.addEventListener('click', (event) => {
+                if (event.target === modalContainer) {
+                    closeModalBtn.click();
+                }
+            });
+
+            generateBtn.addEventListener('click', () => {
+                const userPrompt = promptInput.value.trim();
+                generateRecommendations(userPrompt);
+            });
+        });
+    </script>
+</body>
+</html>
